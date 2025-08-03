@@ -1,5 +1,4 @@
 "use client"
-
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion';
 import { Github, Linkedin, Twitter, ArrowUpRight, Star, GitBranch, Mail, Download, Sun, Moon } from 'lucide-react';
@@ -18,6 +17,7 @@ const ExpressjsIcon = () => (<svg role="img" viewBox="0 0 24 24" xmlns="http://w
 const DockerIcon = () => (<svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-cyan-500"><title>Docker</title><path fill="currentColor" d="M23.23 9.414l-2.21-2.21c-.47-.47-1.1-.7-1.77-.7H4.75c-.67 0-1.3.23-1.77.7L.77 9.414c-.47.47-.7 1.1-.7 1.77v6.6c0 .67.23 1.3.7 1.77l2.21 2.21c.47.47 1.1.7 1.77.7h13.06c.67 0 1.3-.23 1.77-.7l2.21-2.21c.47-.47.7-1.1.7-1.77v-6.6c0-.67-.23-1.3-.7-1.77zM12 19.5c-3.03 0-5.5-2.47-5.5-5.5s2.47-5.5 5.5-5.5 5.5 2.47 5.5 5.5-2.47 5.5-5.5 5.5z"/><path d="M4.5 5h3v2h-3zM8.5 5h3v2h-3zM12.5 5h3v2h-3zM16.5 5h3v2h-3zM4.5 2h3v2h-3z" fill="currentColor"/></svg>);
 
 type Repo = { id: number; name: string; html_url: string; stargazers_count: number; forks_count: number; language: string | null; };
+type GitHubRepo = { id: number; name: string; html_url: string; stargazers_count: number; forks_count: number; language: string | null; };
 type Theme = 'light' | 'dark';
 
 
@@ -159,7 +159,7 @@ const AboutSection = () => (
             <SectionTitle>About Me</SectionTitle>
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.5, delay: 0.2 }} className="text-center text-lg text-zinc-400">
                 <p className="mb-4">
-                    Hello! I'm a Full Stack Developer with a sharp focus on building the future of the web. My expertise lies in <strong>TypeScript</strong>, crafting secure, scalable, and high-performance applications.
+                    Hello! I&apos;m a Full Stack Developer with a sharp focus on building the future of the web. My expertise lies in <strong>TypeScript</strong>, crafting secure, scalable, and high-performance applications.
                 </p>
                 <p>
                     I am passionate about clean code and creating seamless user experiences. I am currently expanding my skills into the <strong>Web3</strong> space, exploring decentralized technologies and blockchain development to build the next generation of digital experiences.
@@ -233,7 +233,7 @@ const ContactSection = () => (
         <div className="container mx-auto max-w-4xl px-4 text-center">
             <SectionTitle>Get In Touch</SectionTitle>
             <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.2 }} className="mb-8 text-lg text-zinc-400">
-                I'm always open to discussing new projects and opportunities. Feel free to reach out if you like my work.
+                I&apos;m always open to discussing new projects and opportunities. Feel free to reach out if you like my work.
             </motion.p>
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.4 }}>
                 <a href="mailto:hashimhashim86@gmail.com" className="inline-flex items-center justify-center gap-2 rounded-md border-2 border-cyan-400 bg-cyan-500/10 px-8 py-3 font-semibold text-cyan-300 transition-all duration-300 hover:bg-cyan-500/20 hover:shadow-[0_0_20px_rgba(0,255,255,0.5)]">
@@ -267,6 +267,7 @@ const App = () => {
             }
             setLoading(true);
             setError(null);
+            
             try {
                 const response = await fetch(`https://api.github.com/users/${githubUsername}/repos?sort=updated&direction=desc`);
                 if (!response.ok) {
@@ -274,23 +275,19 @@ const App = () => {
                     if (response.status === 403) throw new Error('API rate limit exceeded. Please wait a moment and try again.');
                     throw new Error(`Failed to fetch projects. Status: ${response.status}`);
                 }
-                const data = await response.json();
+                const data: GitHubRepo[] = await response.json();
                 if (data.length === 0) {
-                    setError("This user doesn't have any public repositories.");
+                    setError("This user doesn&apos;t have any public repositories.");
                     setRepos([]);
                     return;
                 }
-                const formattedRepos: Repo[] = data.map((repo: any) => ({
-                    id: repo.id,
-                    name: repo.name,
-                    html_url: repo.html_url,
-                    stargazers_count: repo.stargazers_count,
-                    forks_count: repo.forks_count,
-                    language: repo.language,
-                }));
-                setRepos(formattedRepos.slice(0, 9));
-            } catch (err: any) {
-                setError(err.message);
+                setRepos(data.slice(0, 9));
+            } catch (err: unknown) {
+                if (err instanceof Error) {
+                    setError(err.message);
+                } else {
+                    setError("An unknown error occurred.");
+                }
                 setRepos([]); // Clear repos on error
             } finally {
                 setLoading(false);
