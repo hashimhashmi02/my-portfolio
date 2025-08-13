@@ -57,6 +57,7 @@ const ProjectCard = ({ repo }: { repo: Repo }) => (
     </motion.div>
 );
 
+//Title Section
 const SectionTitle = ({ children }: { children: React.ReactNode }) => (
   <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.5 }} className="glitch mb-12 text-center text-3xl font-bold tracking-tight text-cyan-400 sm:text-4xl" data-text={children}>
     {children}
