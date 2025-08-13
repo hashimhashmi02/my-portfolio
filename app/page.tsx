@@ -245,6 +245,8 @@ const ContactSection = () => (
     </section>
 );
 
+//footer section
+
 const Footer = () => (
     <footer className="py-8 text-center text-zinc-500">
         <p>&copy; {new Date().getFullYear()} Hashim Meer Hashim. All Rights Reserved.</p>
